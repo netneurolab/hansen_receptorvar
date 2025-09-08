@@ -10,6 +10,7 @@ from neuromaps.parcellate import Parcellater
 from netneurotools import datasets, plotting
 from scipy.stats import zscore, spearmanr
 import pyvista as pv
+import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 
@@ -60,7 +61,8 @@ def plot_subcortex(data, atlas_rois, hemi_labels, cmap="plasma",
 set up
 """
 
-path = "/home/jhansen/gitrepos/hansen_receptor-variability/"
+path = "C:/Users/justi/OneDrive - McGill University/MisicLab/" \
+    + "proj_receptor_variance/github/hansen_receptorvar/"
 
 filenames = [path + 'data/PET_volumes/5HT1a_cumi101_hc8_beliveau',
              path + 'data/PET_volumes/5HT1b_az_hc36_beliveau',
@@ -436,6 +438,10 @@ for col in M.columns:
     # if M.shape[0] == 100 and 'D2_raclopride' in col:
     #     continue
 
+    # skip GABAa5 because it can't be interpreted as GABAa1/GABAabz
+    # if col == 'GABAa5_ro154513_hc23_chang':
+    #     continue
+
     x = M[col].squeeze()  # receptor map
 
     rep_corr[col] = []
@@ -449,7 +455,7 @@ for col in M.columns:
     if base_key == '5HTT' or base_key == 'D2' or base_key == 'GABAa' or base_key == 'mGluR5':
         if base_key == 'GABAa':
             addedmap = [k for k in M if k.split('_')[0][:5] == base_key
-                        and k != col]
+                        and k != col]  # ...and k[5] != '5'] (to exclude GABAa5)
         elif base_key == 'D2' and M.shape[0] == 100 and 'raclopride' not in col:
             # only compare with non-raclopride D2 maps
             addedmap = [k for k in M if k.split('_')[0] == base_key
